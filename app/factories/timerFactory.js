@@ -151,6 +151,7 @@ angular.module('angularTimer').factory('timerFactory', function ($window, $q) {
                 "id": log.id,
                 "active": log.active,
                 "dateStart": log.dateStart,
+                "dateEnd": log.dateEnd,
                 "dateStartFormat": log.dateStartFormat,
                 "description": log.description,
                 "proyect" : log.proyect,
@@ -183,7 +184,8 @@ angular.module('angularTimer').factory('timerFactory', function ($window, $q) {
             var request = store.put({
                 "id": status.id,
                 "dateStart": status.dateStart,
-                "active": status.active
+                "active": status.active,
+                "resume": status.resume,
             });
 
             request.onsuccess = function (e) {
@@ -259,6 +261,93 @@ angular.module('angularTimer').factory('timerFactory', function ($window, $q) {
         return deferred.promise;
     };
 
+    var getTodos = function () {
+        var deferred = $q.defer();
+
+        if (db === null) {
+            deferred.reject("IndexDB is not opened yet!");
+        } else {
+            var trans = db.transaction(["todo"], "readwrite");
+            var store = trans.objectStore("todo");
+            var todos = [];
+
+            // Get everything in the store;
+            var keyRange = IDBKeyRange.lowerBound(0);
+            var cursorRequest = store.openCursor(keyRange);
+
+            cursorRequest.onsuccess = function (e) {
+                var result = e.target.result;
+                if (result === null || result === undefined) {
+                    deferred.resolve(todos);
+                } else {
+                    todos.unshift(result.value);
+                    if (result.value.id > lastIndex) {
+                        lastIndex = result.value.id;
+                    }
+                    result.
+                        continue ();
+                }
+            };
+
+            cursorRequest.onerror = function (e) {
+                console.log(e.value);
+                deferred.reject("Something went wrong!!!");
+            };
+        }
+
+        return deferred.promise;
+    };
+
+    var addTodo = function (todo) {
+        var deferred = $q.defer();
+
+        if (db === null) {
+            deferred.reject("IndexDB is not opened yet!");
+        } else {
+            var trans = db.transaction(["todo"], "readwrite");
+            var store = trans.objectStore("todo");
+            lastIndex++;
+            var request = store.put({
+                "id": todo.id,
+                "description" : todo.description
+
+            });
+
+            request.onsuccess = function (e) {
+                deferred.resolve();
+            };
+
+            request.onerror = function (e) {
+                console.log(e.value);
+                deferred.reject("Todo item couldn't be added!");
+            };
+        }
+        return deferred.promise;
+    };
+
+    var deleteTodo = function (id) {
+        var deferred = $q.defer();
+
+        if (db === null) {
+            deferred.reject("IndexDB is not opened yet!");
+        } else {
+            var trans = db.transaction(["todo"], "readwrite");
+            var store = trans.objectStore("todo");
+
+            var request = store.delete(id);
+
+            request.onsuccess = function (e) {
+                deferred.resolve();
+            };
+
+            request.onerror = function (e) {
+                console.log(e.value);
+                deferred.reject("Todo item couldn't be deleted");
+            };
+        }
+
+        return deferred.promise;
+    };
 
     return {
         openDB: openDB,
@@ -269,6 +358,9 @@ angular.module('angularTimer').factory('timerFactory', function ($window, $q) {
         getStatus: getStatus,
         deleteStatus : deleteStatus,
         getLog: getLog,
+        getTodos : getTodos,
+        addTodo : addTodo,
+        deleteTodo : deleteTodo,
     };
 
 });

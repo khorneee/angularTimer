@@ -11,7 +11,7 @@ angular.module('angularTimer')
 
         $scope.proyects = null;
 
-
+        $scope.todos = [];
         $scope.logs = [];
 
         function init() {
@@ -47,6 +47,7 @@ angular.module('angularTimer')
                 },1000)
 
                 getLogs(); //abrimos logs
+                getTodos() //abrimos todos
             },1000);
 
 
@@ -59,6 +60,8 @@ angular.module('angularTimer')
 
             var seconds = moment().diff(moment($scope.workingProyect.dateStart, 'x'), 'seconds');
             var elapsed = moment().startOf('day').seconds(seconds).format('HH:mm:ss');
+
+
             $scope.counter = elapsed;
         }
 
@@ -93,7 +96,7 @@ angular.module('angularTimer')
                 $scope.workingProyect.seconds = seconds;
             }
 
-
+            $scope.workingProyect.dateEnd = getTimeNow();
             //dame la fehca de incio formateada y el time empleado formateado
             $scope.workingProyect.dateStartFormat = getDateStart($scope.workingProyect);
             $scope.workingProyect.timeSpend = getTime($scope.workingProyect);
@@ -120,6 +123,7 @@ angular.module('angularTimer')
 
             $timeout(function(){
                 $scope.workingProyect.active = true;
+                $scope.workingProyect.resume = true;
                 //$scope.workingProyect.dateStart = getTimeNow();
                 addStatus($scope.workingProyect);
                 $scope.deleteLog($scope.workingProyect.id);
@@ -128,9 +132,6 @@ angular.module('angularTimer')
 
 
         };
-
-
-
 
 
 
@@ -153,6 +154,7 @@ angular.module('angularTimer')
             return parseInt((Math.random() * 10000),10);
         };
 
+        //LOGS
         function addlog (log) {
             timerFactory.addLog(log).then(function () {
             }, function (err) {
@@ -162,7 +164,7 @@ angular.module('angularTimer')
 
         function getLogs(){
             timerFactory.getLogs().then(function (data) {
-                $scope.logs = data; //no hya manera mas elegante
+                $scope.logs = data; //no hay manera mas elegante
             }, function (err) {
                 alert(err);
             });
@@ -178,11 +180,21 @@ angular.module('angularTimer')
 
         }
 
+        function getLog(id){
+            timerFactory.getLog(id).then(function (data) {
+                $scope.workingProyect = data; //no hya manera mas elegante
+                console.log('por id')
+                console.log($scope.workingProyect)
+            }, function (err) {
+                alert(err);
+            });
+        };
 
+        //STATUS
         function getStatus(){
             timerFactory.getStatus().then(function (data) {
                 var postData = data[0] //devuelve un array cojemos la posicion 0
-                $scope.workingProyect = postData; //no hya manera mas elegante
+                $scope.workingProyect = postData; //no hay manera mas elegante
             }, function (err) {
                 alert(err);
             });
@@ -205,15 +217,33 @@ angular.module('angularTimer')
 
         }
 
-        function getLog(id){
-            timerFactory.getLog(id).then(function (data) {
-                $scope.workingProyect = data; //no hya manera mas elegante
-                console.log('por id')
-                console.log($scope.workingProyect)
+        //TODOS
+        function getTodos(){
+            timerFactory.getTodos().then(function (data) {
+                $scope.todos = data; //no hay manera mas elegante
             }, function (err) {
                 alert(err);
             });
-        };
+        }
+
+        $scope.addTodo = function(todo){
+            $scope.todo.id = generateId();
+            timerFactory.addTodo(todo).then(function () {
+                console.log('Todo añadido');
+                getTodos()
+            }, function (err) {
+                alert(err);
+            });
+        }
+
+        $scope.deleteTodo = function(id){
+            timerFactory.deleteTodo(id).then(function () {
+                console.log('todo elimiando')
+                getTodos()
+            }, function (err) {
+                alert(err);
+            });
+        }
 
 
 

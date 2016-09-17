@@ -24,8 +24,10 @@
 
         <div>TODO</div>
         <div>
+            <input ng-model="todo.description">
+            <button ng-click="addTodo(todo)">Add</button>
             <div ng-repeat="todo in todos track by $index">
-                <p>{{todo}}</p>
+                <p>{{todo}}}<button ng-click="deleteTodo(todo.id)">delete</button></p>
             </div>
         </div>
 
