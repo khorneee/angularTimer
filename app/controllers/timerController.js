@@ -81,10 +81,16 @@ angular.module('angularTimer')
             $scope.workingProyect.dateStartFormat = getDateStart($scope.workingProyect);
             $scope.workingProyect.timeSpend = getTime($scope.workingProyect);
 
+            //añadimos log
+            addlog($scope.workingProyect);
+
             addarray($scope.workingProyect)
+
+
             $scope.workingProyect.id = generateId();
 
             console.log($scope.logs);
+
         };
 
         function getDateStart (proyect) {
@@ -106,6 +112,13 @@ angular.module('angularTimer')
             return parseInt((Math.random() * 10000),10);
         };
 
+        function addlog (log) {
+            timerFactory.addLog(log).then(function () {
+                console.log('Log añadido');
+            }, function (err) {
+                $window.alert(err);
+            });
+        }
 
         $scope.resumeTracker = function () {
             stopTime();

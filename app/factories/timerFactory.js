@@ -14,20 +14,22 @@ angular.module('angularTimer').factory('timerFactory', [ '$http', '$q', '$window
             var version = 2;
             var request = indexedDB.open("timerDB", version);
 
+            //indexedDB.deleteDatabase("timerDB")
+
             request.onupgradeneeded = function (e) {
                 db = e.target.result;
 
                 e.target.transaction.onerror = indexedDB.onerror;
 
-                //if (db.objectStoreNames.contains("timer")) {
-                    db.deleteObjectStore("timer");
-                //}
+                if (db.objectStoreNames.contains("logs")) {
+                    db.deleteObjectStore("logs");
+                }
 
-                var store = db.createObjectStore("logs", {
+                var logsStore = db.createObjectStore("logs", {
                     keyPath: "id"
                 });
 
-                var store2 = db.createObjectStore("todo", {
+                var todoStore = db.createObjectStore("todo", {
                     keyPath: "id"
                 });
             };
@@ -91,11 +93,12 @@ angular.module('angularTimer').factory('timerFactory', [ '$http', '$q', '$window
                 deferred.reject("IndexDB is not opened yet!");
             } else {
                 var trans = db.transaction(["logs"], "readwrite");
-                var store = trans.objectStore("todo");
+                var store = trans.objectStore("logs");
                 lastIndex++;
                 var request = store.put({
-                    "id": lastIndex,
-                    "text": log
+                    "id": log.id,
+                    "text": log,
+                    ""
                 });
 
                 request.onsuccess = function (e) {
