@@ -18,7 +18,7 @@
         <div>LOGS</div>
         <div>
             <div ng-repeat="log in logs track by $index">
-                <p>{{log}}</p>
+                <p>{{log}}<button ng-click="deleteLog(log.id)">delete</button><button ng-click="resumeTracker(log.id)">Resume</button></p>
             </div>
         </div>
 

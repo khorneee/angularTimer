@@ -75,7 +75,7 @@ angular.module('angularTimer')
             }
 
             $scope.workingProyect.active = true;
-            $scope.workingProyect.dateStart = moment().format('x');
+            $scope.workingProyect.dateStart = getTimeNow();
             console.log($scope.workingProyect)
 
             $scope.workingProyect.id = generateId()
@@ -93,8 +93,6 @@ angular.module('angularTimer')
                 $scope.workingProyect.seconds = seconds;
             }
 
-            //a?adimos un id
-            //$scope.workingProyect._id = $scope.proyects.length + 1;
 
             //dame la fehca de incio formateada y el time empleado formateado
             $scope.workingProyect.dateStartFormat = getDateStart($scope.workingProyect);
@@ -102,14 +100,39 @@ angular.module('angularTimer')
 
             //añadimos log
             addlog($scope.workingProyect);
+            //refresamos logas
             getLogs();
+            //borramos status
             deleteStatus($scope.workingProyect.id)
-
+            //generamos id
             $scope.workingProyect.id = generateId();
 
-            console.log($scope.logs);
 
         };
+
+
+        $scope.resumeTracker = function (id) {
+            //si hay alguno correndo lo para
+            if($scope.workingProyect != undefined){
+                $scope.stopTracker();
+            }
+            getLog(id);
+
+            $timeout(function(){
+                $scope.workingProyect.active = true;
+                //$scope.workingProyect.dateStart = getTimeNow();
+                addStatus($scope.workingProyect);
+                $scope.deleteLog($scope.workingProyect.id);
+            },1000)
+
+
+
+        };
+
+
+
+
+
 
         function getDateStart (proyect) {
             return moment(proyect.dateStart, "x").format("HH:mm:ss, DD-MM-YYYY");
@@ -118,6 +141,10 @@ angular.module('angularTimer')
         function getTime(proyect) {
             return moment().startOf('day').seconds(proyect.seconds).format('HH:mm:ss');
         };
+
+        function getTimeNow(){
+            return moment().format("x");
+        }
 
         function generateId() {
             // Math.random should be unique because of its seeding algorithm.
@@ -128,7 +155,6 @@ angular.module('angularTimer')
 
         function addlog (log) {
             timerFactory.addLog(log).then(function () {
-                console.log('Log añadido');
             }, function (err) {
                 alert(err);
             });
@@ -137,17 +163,26 @@ angular.module('angularTimer')
         function getLogs(){
             timerFactory.getLogs().then(function (data) {
                 $scope.logs = data; //no hya manera mas elegante
-                console.log(data)
             }, function (err) {
                 alert(err);
             });
         };
 
+        $scope.deleteLog = function(id){
+            timerFactory.deleteLog(id).then(function () {
+                console.log('log elimiando')
+                getLogs();
+            }, function (err) {
+                alert(err);
+            });
+
+        }
+
+
         function getStatus(){
             timerFactory.getStatus().then(function (data) {
                 var postData = data[0] //devuelve un array cojemos la posicion 0
                 $scope.workingProyect = postData; //no hya manera mas elegante
-                console.log($scope.workingProyect)
             }, function (err) {
                 alert(err);
             });
@@ -170,12 +205,16 @@ angular.module('angularTimer')
 
         }
 
-
-
-
-        $scope.resumeTracker = function () {
-            stopTime();
+        function getLog(id){
+            timerFactory.getLog(id).then(function (data) {
+                $scope.workingProyect = data; //no hya manera mas elegante
+                console.log('por id')
+                console.log($scope.workingProyect)
+            }, function (err) {
+                alert(err);
+            });
         };
+
 
 
         init();

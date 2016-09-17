@@ -83,6 +83,37 @@ angular.module('angularTimer').factory('timerFactory', function ($window, $q) {
         return deferred.promise;
     };
 
+    var getLog = function (id) {
+        var deferred = $q.defer();
+
+        if (db === null) {
+            deferred.reject("IndexDB is not opened yet!");
+        } else {
+            var trans = db.transaction(["logs"], "readwrite");
+            var store = trans.objectStore("logs");
+            var log = {};
+            var request = store.get(id)
+
+
+            request.onsuccess = function (e) {
+                var result = e.target.result;
+                if (result === null || result === undefined) {
+                    deferred.reject('Not found!!');
+                } else {
+                    deferred.resolve(result);
+                }
+            };
+
+            request.onerror = function (e) {
+                console.log(e.value);
+                deferred.reject("Something went wrong!!!");
+            };
+        }
+
+        return deferred.promise;
+    };
+
+
     var deleteLog = function (id) {
         var deferred = $q.defer();
 
@@ -237,6 +268,7 @@ angular.module('angularTimer').factory('timerFactory', function ($window, $q) {
         addStatus: addStatus,
         getStatus: getStatus,
         deleteStatus : deleteStatus,
+        getLog: getLog,
     };
 
 });
