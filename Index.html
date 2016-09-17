@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body ng-app="angularTimer">
+    <div ng-controller="timerController">
+
+
+        <p>{{counter}}</p>
+        <button ng-click="startTracker()">Start</button>
+        <button ng-click="stopTracker()">Stop</button>
+
+        <div>ACTUAL</div>
+        <p>{{workingProyect}}</p>
+
+        <div>LOGS</div>
+        <div>
+            <div ng-repeat="log in logs track by $index">
+                <p>{{log}}</p>
+            </div>
+        </div>
+
+    </div>
+    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="bower_components/moment/moment.js"></script>
+
+    <script src="app/app.js"></script>
+    <script src="app/controllers/timerController.js"></script>
+    <script src="app/factories/timerFactory.js"></script>
+</body>
+</html>
