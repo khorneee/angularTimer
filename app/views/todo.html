@@ -1,0 +1,39 @@
+<div ng-show="loaded">
+
+    <div class="form margin-bottom">
+        <form ng-submit="addTodo(todo)">
+            <input type="text" maxlength="100" class="input" ng-model="todo.description" placeholder="description....." />
+            <input type="submit" class="button button-inline button-blue" value="Add ToDo" />
+        </form>
+    </div>
+
+    <div class="list list-projects">
+        <table border="0">
+            <thead>
+            <th>Description</th>
+            <th></th>
+            </thead>
+            <tbody>
+            <tr ng-repeat="todo in todos">
+                <td>
+                    <p>{{todo.description}}</p>
+                </td>
+                <td class="align-right">
+                    <a class="button button-inline button-delete" href="" ng-click="deleteTodo(todo.id)"><i class="icon-trash"></i></a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<div ng-hide="loaded">
+    <div class="spinner">
+        <div class="rect1"></div>
+        <div class="rect2"></div>
+        <div class="rect3"></div>
+        <div class="rect4"></div>
+        <div class="rect5"></div>
+    </div>
+</div>

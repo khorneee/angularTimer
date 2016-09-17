@@ -2,7 +2,7 @@
  * Created by adminlocal on 17/09/2016.
  */
 angular.module('angularTimer')
-    .controller('timerController', function($scope, $interval, timerFactory,$timeout) {
+    .controller('timerController', function($scope, $interval, timerFactory, $timeout, $location) {
 
         $scope.loaded = false;
         $scope.counter = null;
@@ -11,6 +11,8 @@ angular.module('angularTimer')
 
         $scope.proyects = null;
 
+
+        $scope.todo = {}
         $scope.todos = [];
         $scope.logs = [];
 
@@ -22,9 +24,6 @@ angular.module('angularTimer')
 
             //delay para abrir la base de datos
             $timeout(function(){
-                /*$timeout(function(){
-                    getStatus()
-                },1000)*/
 
                  getStatus();//abrimos si hay status activo
 
@@ -51,8 +50,11 @@ angular.module('angularTimer')
             },1000);
 
 
+            $scope.loaded = true;
 
-
+            $scope.navIsActive = function (path) {
+                return path === $location.path();
+            };
 
         }
 

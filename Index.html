@@ -1,42 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" ng-app="angularTimer">
 <head>
-    <meta charset="UTF-8">
-    <title></title>
+    <meta charset="utf-8">
+    <title>Time Tracker App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,300' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="styles/normalize.css">
+    <link rel="stylesheet" href="styles/fontello.css">
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/angular-chart.css">
 </head>
-<body ng-app="angularTimer">
-    <div ng-controller="timerController">
+<body>
 
+<div class="wrapper" ng-controller="timerController" ng-cloak class="ng-cloak">
 
-        <p>{{counter}}</p>
-        <button ng-click="startTracker()">Start</button>
-        <button ng-click="stopTracker()">Stop</button>
+    <!--
+    <div id="login" ng-show="!isRegistered">$scope.proyects.length
+        <div class="align-center">
+            <h1>{{ ::appSettings.applicationName }}</h1>
+            <form ng-submit="signIn(userName)">
+                <input type="text" ng-model="userName" class="input" placeholder="Choose a username..." />
+                <input type="submit" class="button button-inline button-blue" value="Start tracking!" />
+            </form>
+        </div>
+    </div>
+    -->
 
-        <div>ACTUAL</div>
-        <p>{{workingProyect}}</p>
+    <div id="app">
 
-        <div>LOGS</div>
-        <div>
-            <div ng-repeat="log in logs track by $index">
-                <p>{{log}}<button ng-click="deleteLog(log.id)">delete</button><button ng-click="resumeTracker(log.id)">Resume</button></p>
+        <div class="tracker clear" ng-class="{ loading: !loaded }">
+            <div class="actions align-center">
+                <span class="counter">{{ counter }}</span>
+                <button class="button button-inline button-large button-green" ng-click="startTracker()" ng-if="!workingProyect.active"><i class="icon-play"></i> Start</button>
+                <button class="button button-inline button-large button-red" ng-click="stopTracker()" ng-if="workingProyect.active"><i class="icon-stop"></i> Stop</button>
+            </div>
+            <div class="form">
+                <div class="form-row">
+                    <label>Project:</label>
+                    <input type="text" ng-model="workingProyect.proyect" class="input border-bottom" placeholder="Type your proyect..." />
+                </div>
+                <div class="form-row">
+                    <label>Task:</label>
+                    <input type="text" ng-model="workingProyect.task" class="input border-bottom" placeholder="Type your task..." />
+                </div>
+                <div class="form-row">
+                    <label>Notes:</label>
+                    <input type="text" ng-model="workingProyect.description" class="input border-bottom" placeholder="Type your notes..." />
+                </div>
             </div>
         </div>
 
-        <div>TODO</div>
-        <div>
-            <input ng-model="todo.description">
-            <button ng-click="addTodo(todo)">Add</button>
-            <div ng-repeat="todo in todos track by $index">
-                <p>{{todo}}}<button ng-click="deleteTodo(todo.id)">delete</button></p>
-            </div>
+        <div class="container clear">
+            <nav>
+                <ul>
+                    <li ng-class="{ active: navIsActive('/') }"><a href="#/"><i class="icon-logs"></i>Logs</a></li>
+                    <li ng-class="{ active: navIsActive('/projects') }"><a href="#/projects"><i class="icon-projects"></i>Projects</a></li>
+                    <li ng-class="{ active: navIsActive('/statistics') }"><a href="#/statistics"><i class="icon-stats"></i>Statistics</a></li>
+                    <li ng-class="{ active: navIsActive('/todo') }"><a href="#/todo"><i class="icon-doc"></i>ToDo</a></li>
+                </ul>
+            </nav>
+            <main>
+                <div ng-view></div>
+            </main>
         </div>
 
     </div>
-    <script src="bower_components/angular/angular.min.js"></script>
+
+</div>
+    <script src="bower_components/angular/angular.js"></script>
     <script src="bower_components/moment/moment.js"></script>
+    <script src="bower_components/angular-route/angular-route.min.js"></script>
 
     <script src="app/app.js"></script>
     <script src="app/controllers/timerController.js"></script>
     <script src="app/factories/timerFactory.js"></script>
+    <script src="app/controllers/logsController.js"></script>
+    <script src="app/controllers/todoController.js"></script>
 </body>
 </html>
