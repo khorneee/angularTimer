@@ -3,5 +3,5 @@ angular.module('angularTimer')
 
         $scope.loaded = true
 
-        console.log('Vista log cargada');
+
     })

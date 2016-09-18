@@ -4,8 +4,9 @@
         <table border="0">
             <thead>
                 <th>Time</th>
-                <th class="hide-mobile">Project</th>
-                <th>Note</th>
+                <th>Project</th>
+                <th>Task</th>
+                <th class="hide-mobile">Note</th>
                 <th></th>
             </thead>
             <tbody>
@@ -21,7 +22,7 @@
                         <input type="text" class="input input-notes"/>
                     </td>
                     <td class="align-right">
-                        <a class="button button-inline button-blue" href=""><i class="icon-play"></i>resume</a>
+                        <a class="button button-inline button-blue" href="" ng-click="resumeTracker(log.id)"><i class="icon-play"></i>resume</a>
                     </td>
                     <td class="align-right">
                         <a class="button button-inline button-delete" href="" ng-click="deleteLog(log.id)"><i class="icon-trash"></i></a>

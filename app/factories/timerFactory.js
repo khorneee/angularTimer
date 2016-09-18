@@ -22,15 +22,23 @@ angular.module('angularTimer').factory('timerFactory', function ($window, $q) {
             }
 
             var logsStore = db.createObjectStore("logs", {
-                keyPath: "id"
+                keyPath: "id",
+                autoIncrement:true
             });
 
             var todoStore = db.createObjectStore("todo", {
-                keyPath: "id"
+                keyPath: "id",
+                autoIncrement:true
             });
 
             var statusStore = db.createObjectStore("status", {
-                keyPath: "id"
+                keyPath: "id",
+                autoIncrement:true
+            });
+
+            var statusStore = db.createObjectStore("project", {
+                keyPath: "id",
+                autoIncrement:true
             });
         };
 
@@ -148,7 +156,6 @@ angular.module('angularTimer').factory('timerFactory', function ($window, $q) {
             var store = trans.objectStore("logs");
             lastIndex++;
             var request = store.put({
-                "id": log.id,
                 "active": log.active,
                 "dateStart": log.dateStart,
                 "dateEnd": log.dateEnd,
@@ -182,7 +189,6 @@ angular.module('angularTimer').factory('timerFactory', function ($window, $q) {
             var store = trans.objectStore("status");
             lastIndex++;
             var request = store.put({
-                "id": status.id,
                 "dateStart": status.dateStart,
                 "active": status.active,
                 "resume": status.resume,
@@ -308,7 +314,6 @@ angular.module('angularTimer').factory('timerFactory', function ($window, $q) {
             var store = trans.objectStore("todo");
             lastIndex++;
             var request = store.put({
-                "id": todo.id,
                 "description" : todo.description
 
             });
@@ -349,6 +354,93 @@ angular.module('angularTimer').factory('timerFactory', function ($window, $q) {
         return deferred.promise;
     };
 
+    var getProject = function () {
+        var deferred = $q.defer();
+
+        if (db === null) {
+            deferred.reject("IndexDB is not opened yet!");
+        } else {
+            var trans = db.transaction(["project"], "readwrite");
+            var store = trans.objectStore("project");
+            var projects = [];
+
+            // Get everything in the store;
+            var keyRange = IDBKeyRange.lowerBound(0);
+            var cursorRequest = store.openCursor(keyRange);
+
+            cursorRequest.onsuccess = function (e) {
+                var result = e.target.result;
+                if (result === null || result === undefined) {
+                    deferred.resolve(projects);
+                } else {
+                    projects.unshift(result.value);
+                    if (result.value.id > lastIndex) {
+                        lastIndex = result.value.id;
+                    }
+                    result.
+                        continue ();
+                }
+            };
+
+            cursorRequest.onerror = function (e) {
+                console.log(e.value);
+                deferred.reject("Something went wrong!!!");
+            };
+        }
+
+        return deferred.promise;
+    };
+
+    var addProject = function (project) {
+        var deferred = $q.defer();
+
+        if (db === null) {
+            deferred.reject("IndexDB is not opened yet!");
+        } else {
+            var trans = db.transaction(["project"], "readwrite");
+            var store = trans.objectStore("project");
+            lastIndex++;
+            var request = store.put({
+                "description" : todo.description
+
+            });
+
+            request.onsuccess = function (e) {
+                deferred.resolve();
+            };
+
+            request.onerror = function (e) {
+                console.log(e.value);
+                deferred.reject("prooject item couldn't be added!");
+            };
+        }
+        return deferred.promise;
+    };
+
+    var deleteProject = function (id) {
+        var deferred = $q.defer();
+
+        if (db === null) {
+            deferred.reject("IndexDB is not opened yet!");
+        } else {
+            var trans = db.transaction(["project"], "readwrite");
+            var store = trans.objectStore("project");
+
+            var request = store.delete(id);
+
+            request.onsuccess = function (e) {
+                deferred.resolve();
+            };
+
+            request.onerror = function (e) {
+                console.log(e.value);
+                deferred.reject("project item couldn't be deleted");
+            };
+        }
+
+        return deferred.promise;
+    };
+
     return {
         openDB: openDB,
         getLogs: getLogs,
@@ -361,6 +453,9 @@ angular.module('angularTimer').factory('timerFactory', function ($window, $q) {
         getTodos : getTodos,
         addTodo : addTodo,
         deleteTodo : deleteTodo,
+        getProjects : getProject,
+        addProject : addProject,
+        deleteProject : deleteProject
     };
 
 });
