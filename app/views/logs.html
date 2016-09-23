@@ -15,11 +15,14 @@
                         <span class="time">{{ log.timeSpend }}</span>
                         <span class="date">{{ log.dateStartFormat }}</span>
                     </td>
-                    <td class="hide-mobile">
-
+                    <td>
+                        {{log.project.name}}
                     </td>
                     <td>
-                        <input type="text" class="input input-notes"/>
+                        {{log.task}}
+                    </td>
+                    <td>
+                        <input type="text" class="input input-notes" ng-model="log.notes"/>
                     </td>
                     <td class="align-right">
                         <a class="button button-inline button-blue" href="" ng-click="resumeTracker(log.id)"><i class="icon-play"></i>resume</a>

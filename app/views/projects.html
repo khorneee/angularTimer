@@ -17,13 +17,13 @@
             <tbody>
                 <tr ng-repeat="project in projects">
                     <td>
-                        <input type="text" class="input input-projectname" ng-model="project.name" ng-change="projects.$save(project)" />
+                        <input type="text" class="input input-projectname" ng-model="project.name"/>
                     </td>
                     <td>
-                        {{ getTimeSpent(project) }} - <a href="#/statistics/{{ project.$id }}">view statistics</a>
+                        {{ getTimeSpendPerProject(project.id) }} - <a href="#/statistics/{{ project.$id }}">view statistics</a>
                     </td>
                     <td class="align-right">
-                        <a class="button button-inline button-delete" href="" ng-click="deleteProject(project)"><i class="icon-trash"></i></a>
+                        <a class="button button-inline button-delete" href="" ng-click="deleteProject(project.id)"><i class="icon-trash"></i></a>
                     </td>
                 </tr>
             </tbody>

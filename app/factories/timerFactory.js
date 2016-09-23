@@ -161,8 +161,9 @@ angular.module('angularTimer').factory('timerFactory', function ($window, $q) {
                 "dateEnd": log.dateEnd,
                 "dateStartFormat": log.dateStartFormat,
                 "description": log.description,
-                "proyect" : log.proyect,
+                "project" : log.project,
                 "task" : log.task,
+                "notes" : log.notes,
                 "timeSpend" : log.timeSpend,
                 "seconds" : log.seconds,
             });
@@ -192,6 +193,10 @@ angular.module('angularTimer').factory('timerFactory', function ($window, $q) {
                 "dateStart": status.dateStart,
                 "active": status.active,
                 "resume": status.resume,
+                "description": status.description,
+                "project" : status.project,
+                "task" : status.task,
+                "notes" : status.notes,
             });
 
             request.onsuccess = function (e) {
@@ -354,7 +359,7 @@ angular.module('angularTimer').factory('timerFactory', function ($window, $q) {
         return deferred.promise;
     };
 
-    var getProject = function () {
+    var getProjects = function () {
         var deferred = $q.defer();
 
         if (db === null) {
@@ -391,7 +396,7 @@ angular.module('angularTimer').factory('timerFactory', function ($window, $q) {
         return deferred.promise;
     };
 
-    var addProject = function (project) {
+    var addProject = function (projectName) {
         var deferred = $q.defer();
 
         if (db === null) {
@@ -401,7 +406,7 @@ angular.module('angularTimer').factory('timerFactory', function ($window, $q) {
             var store = trans.objectStore("project");
             lastIndex++;
             var request = store.put({
-                "description" : todo.description
+                "name" : projectName //
 
             });
 
@@ -411,7 +416,7 @@ angular.module('angularTimer').factory('timerFactory', function ($window, $q) {
 
             request.onerror = function (e) {
                 console.log(e.value);
-                deferred.reject("prooject item couldn't be added!");
+                deferred.reject("project item couldn't be added!");
             };
         }
         return deferred.promise;
@@ -419,7 +424,7 @@ angular.module('angularTimer').factory('timerFactory', function ($window, $q) {
 
     var deleteProject = function (id) {
         var deferred = $q.defer();
-
+        console.log(id);
         if (db === null) {
             deferred.reject("IndexDB is not opened yet!");
         } else {
@@ -453,7 +458,7 @@ angular.module('angularTimer').factory('timerFactory', function ($window, $q) {
         getTodos : getTodos,
         addTodo : addTodo,
         deleteTodo : deleteTodo,
-        getProjects : getProject,
+        getProjects : getProjects,
         addProject : addProject,
         deleteProject : deleteProject
     };

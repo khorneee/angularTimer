@@ -15,7 +15,7 @@
 <div class="wrapper" ng-controller="timerController" ng-cloak class="ng-cloak">
 
     <!--
-    <div id="login" ng-show="!isRegistered">$scope.proyects.length
+    <div id="login" ng-show="!isRegistered">$scope.Projects.length
         <div class="align-center">
             <h1>{{ ::appSettings.applicationName }}</h1>
             <form ng-submit="signIn(userName)">
@@ -31,22 +31,24 @@
         <div class="tracker clear" ng-class="{ loading: !loaded }">
             <div class="actions align-center">
                 <span class="counter">{{ counter }}</span>
-                <button class="button button-inline button-large button-green" ng-click="startTracker()" ng-if="!workingProyect.active"><i class="icon-play"></i> Start</button>
-                <button class="button button-inline button-large button-red" ng-click="stopTracker()" ng-if="workingProyect.active"><i class="icon-stop"></i> Stop</button>
+                <button class="button button-inline button-large button-green" ng-click="startTracker()" ng-if="!workingProject.active" ng-hide="workingProject.project == null"><i class="icon-play"></i> Start</button>
+                <button class="button button-inline button-large button-red" ng-click="stopTracker()" ng-if="workingProject.active"><i class="icon-stop"></i> Stop</button>
             </div>
 
             <div class="form">
                 <div class="form-row">
                     <label>Project:</label>
-                    <input type="text" ng-model="workingProyect.proyect" class="input border-bottom" placeholder="Type your proyect..." />
+                    <select class="input"  ng-class="{ disabled: workingProject.active }" ng-model="workingProject.project" ng-init="workingProject.project.name" ng-options="v.name for v in projects">
+                        <option style="display:none" value=""></option>
+                    </select>
                 </div>
                 <div class="form-row">
                     <label>Task:</label>
-                    <input type="text" ng-model="workingProyect.task" class="input border-bottom" placeholder="Type your task..." />
+                    <input type="text" ng-model="workingProject.task" class="input border-bottom" placeholder="Type your task..." />
                 </div>
                 <div class="form-row">
                     <label>Notes:</label>
-                    <input type="text" ng-model="workingProyect.description" class="input border-bottom" placeholder="Type your notes..." />
+                    <input type="text" ng-model="workingProject.notes" class="input border-bottom" placeholder="Type your notes..." />
                 </div>
             </div>
         </div>
@@ -60,7 +62,7 @@
                     <li ng-class="{ active: navIsActive('/todo') }"><a href="#/todo"><i class="icon-doc"></i>ToDo</a></li>
                 </ul>
             </nav>
-            <main>
+            <main style="overflow-y: scroll; height: 600px">
                 <div ng-view></div>
             </main>
         </div>

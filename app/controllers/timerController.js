@@ -9,7 +9,7 @@ angular.module('angularTimer')
         $scope.status = null;
         var _intervalId;
 
-        $scope.proyects = null;
+        $scope.projects = [];
 
 
         $scope.todo = {}
@@ -26,14 +26,14 @@ angular.module('angularTimer')
             $timeout(function(){
 
                  getStatus();//abrimos si hay status activo
-
+                 getProjects();
 
                 //cone a la escucha el $scope con un delay de un segundo para que carge
                 $timeout(function(){
-                $scope.$watch('workingProyect.active',function () {
+                $scope.$watch('workingProject.active',function () {
 
-                    if (!!$scope.workingProyect) {
-                        if ($scope.workingProyect.active) {
+                    if (!!$scope.workingProject) {
+                        if ($scope.workingProject.active) {
                             _intervalId = $interval(updateTime, 1000);
                         } else {
                             stopTime();
@@ -47,6 +47,8 @@ angular.module('angularTimer')
 
                 getLogs(); //abrimos logs
                 getTodos() //abrimos todos
+
+
             },1000);
 
 
@@ -60,13 +62,8 @@ angular.module('angularTimer')
 
         function updateTime() {
 
-            var seconds = moment().diff(moment($scope.workingProyect.dateStart, 'x'), 'seconds');
+            var seconds = moment().diff(moment($scope.workingProject.dateStart, 'x'), 'seconds');
             var elapsed = moment().startOf('day').seconds(seconds).format('HH:mm:ss');
-
-            //if($scope.workingProyect.resume){
-            //    seconds = $scope.workingProyect.seconds
-            //    elapsed = moment().startOf('day').seconds(seconds).format('HH:mm:ss');
-            //}
 
             $scope.counter = elapsed;
         }
@@ -78,17 +75,17 @@ angular.module('angularTimer')
         }
 
         $scope.startTracker = function () {
-            //si workingProyect llega vacio no hay contadores a la espera
-            if ($scope.workingProyect == undefined){
-                $scope.workingProyect = { "active" : false ,
+            //si workingProject llega vacio no hay contadores a la espera
+            if ($scope.workingProject == undefined){
+                $scope.workingProject = { "active" : false ,
                                           "resume" :  false}
             }
 
-            $scope.workingProyect.active = true;
-            $scope.workingProyect.dateStart = getTimeNow();
+            $scope.workingProject.active = true;
+            $scope.workingProject.dateStart = getTimeNow();
 
-            //$scope.workingProyect.id = generateId()
-            addStatus($scope.workingProyect); //añadimos estatus
+
+            addStatus($scope.workingProject); //añadimos estatus
             getStatus(); //cogemos el id generado por la bbdd
         };
 
@@ -96,28 +93,28 @@ angular.module('angularTimer')
             stopTime();
 
 
-            $scope.workingProyect.active = false;
-            if (!!$scope.workingProyect.dateStart) {
-                var seconds = moment().diff(moment($scope.workingProyect.dateStart, 'x'), 'seconds');
-                $scope.workingProyect.seconds = seconds;
+            $scope.workingProject.active = false;
+            if (!!$scope.workingProject.dateStart) {
+                var seconds = moment().diff(moment($scope.workingProject.dateStart, 'x'), 'seconds');
+                $scope.workingProject.seconds = seconds;
             }
 
-            $scope.workingProyect.dateEnd = getTimeNow();
+            $scope.workingProject.dateEnd = getTimeNow();
             //dame la fehca de incio formateada y el time empleado formateado
-            $scope.workingProyect.dateStartFormat = getDateStart($scope.workingProyect);
-            $scope.workingProyect.timeSpend = getTime($scope.workingProyect);
+            $scope.workingProject.dateStartFormat = getDateStart($scope.workingProject);
+            $scope.workingProject.timeSpend = getTime($scope.workingProject);
 
 
 
             //añadimos log
-            addlog($scope.workingProyect);
+            addlog($scope.workingProject);
             //refresamos logas
             getLogs();
             //borramos status
-            deleteStatus($scope.workingProyect.id)
-            //generamos id
-            //$scope.workingProyect.id = generateId();
+            deleteStatus($scope.workingProject.id)
 
+            //limpiamos el working projec
+            $scope.workingProject = null;
 
 
 
@@ -126,17 +123,17 @@ angular.module('angularTimer')
 
         $scope.resumeTracker = function (id) {
             //si hay alguno correndo lo para
-            if($scope.workingProyect != undefined){
+            if($scope.workingProject != undefined){
                 $scope.stopTracker();
             }
             getLog(id);
 
             $timeout(function(){
-                $scope.workingProyect.active = true;
-                $scope.workingProyect.resume = true;
-                //$scope.workingProyect.dateStart = getTimeNow();
-                addStatus($scope.workingProyect);
-                $scope.deleteLog($scope.workingProyect.id);
+                $scope.workingProject.active = true;
+                $scope.workingProject.resume = true;
+                //$scope.workingProject.dateStart = getTimeNow();
+                addStatus($scope.workingProject);
+                $scope.deleteLog($scope.workingProject.id);
             },1000)
 
 
@@ -145,24 +142,18 @@ angular.module('angularTimer')
 
 
 
-        function getDateStart (proyect) {
-            return moment(proyect.dateStart, "x").format("HH:mm:ss, DD-MM-YYYY");
+        function getDateStart (project) {
+            return moment(project.dateStart, "x").format("HH:mm:ss, DD-MM-YYYY");
         };
 
-        function getTime(proyect) {
-            return moment().startOf('day').seconds(proyect.seconds).format('HH:mm:ss');
+        function getTime(project) {
+            return moment().startOf('day').seconds(project.seconds).format('HH:mm:ss');
         };
 
         function getTimeNow(){
             return moment().format("x");
         }
 
-/*        function generateId() {
-            // Math.random should be unique because of its seeding algorithm.
-            // Convert it to base 36 (numbers + letters), and grab the first 9 characters
-            // after the decimal.
-            return parseInt((Math.random() * 10000),10);
-        };*/
 
         //LOGS
         function addlog (log) {
@@ -192,9 +183,9 @@ angular.module('angularTimer')
 
         function getLog(id){
             timerFactory.getLog(id).then(function (data) {
-                $scope.workingProyect = data; //no hya manera mas elegante
+                $scope.workingProject = data; //no hya manera mas elegante
                 console.log('Log por id')
-                console.log($scope.workingProyect)
+                console.log($scope.workingProject)
             }, function (err) {
                 alert(err);
             });
@@ -204,7 +195,8 @@ angular.module('angularTimer')
         function getStatus(){
             timerFactory.getStatus().then(function (data) {
                 var postData = data[0] //devuelve un array cojemos la posicion 0
-                $scope.workingProyect = postData; //no hay manera mas elegante
+                $scope.workingProject = postData; //no hay manera mas elegante
+                console.log($scope.workingProject)
             }, function (err) {
                 alert(err);
             });
@@ -241,6 +233,7 @@ angular.module('angularTimer')
             timerFactory.addTodo(todo).then(function () {
                 console.log('Todo añadido');
                 getTodos()
+                $scope.todo = null; //limpiamos el todo
             }, function (err) {
                 alert(err);
             });
@@ -256,7 +249,59 @@ angular.module('angularTimer')
         }
 
         //PROJECT
+        $scope.addProject = function(project){
+            //$scope.todo.id = generateId();
+            timerFactory.addProject(project).then(function () {
+                console.log('projeco añadido');
+                getProjects()
+                $scope.newProjectName = null;
+            }, function (err) {
+                alert(err);
+            });
+        }
 
+        function getProjects(){
+            timerFactory.getProjects().then(function (data) {
+                $scope.projects = data; //no hay manera mas elegante
+            }, function (err) {
+                alert(err);
+            });
+        }
+
+        $scope.deleteProject = function(id){
+            if($scope.logs.length > 0){
+                //si no hay ningun log no borrar en cascada solo borrar el proyecto
+                for (var i = 0, len = $scope.logs.length; i < len; i++) {
+                    if ($scope.logs[i].project.id == id) {
+                        console.log($scope.logs[i].project.id)
+                        timerFactory.deleteLog($scope.logs[i].id).then(function () {
+                            console.log('log elimiando')
+
+                        }, function (err) {
+                            alert(err);
+                        });
+                    }
+                }
+            }
+            timerFactory.deleteProject(id).then(function () {
+                console.log('projeco elimiando')
+                getProjects();
+                getLogs()
+            }, function (err) {
+                alert(err);
+            });
+        }
+
+        $scope.getTimeSpendPerProject = function(id){
+            var seconds = 0;
+            for (var i = 0, len = $scope.logs.length; i < len; i++) {
+                if ($scope.logs[i].project.id == id) {
+                    seconds += $scope.logs[i].seconds;
+                }
+            }
+            var timeSpent = moment().startOf('day').seconds(seconds).format('HH:mm:ss');
+            return timeSpent;
+        }
 
 
         init();
