@@ -38,9 +38,14 @@
             <div class="form">
                 <div class="form-row">
                     <label>Project:</label>
-                    <select class="input"  ng-class="{ disabled: workingProject.active }" ng-model="workingProject.project" ng-init="workingProject.project.name" ng-options="v.name for v in projects">
-                        <option style="display:none" value=""></option>
+                   <select class="input"  ng-class="{ disabled: workingProject.active }" ng-model="workingProject.project" ng-options="v.name for v in projects" ng-disabled="workingProject.active">
+                         <option style="display:none" value=""></option>
+                         <option ng-selected="v.name" ng-value="{{workingProject.project}}"></option>
                     </select>
+<!--                    <select class="input" ng-model="workingProject.project"  ng-disabled="workingProject.active" ng-class="{ disabled: workingProject.active }">
+                        <option ng-selected="{{project.id == workingProject.project.id}}" ng-repeat="project in projects" value="{{project.id}}">{{project.name}}</option>
+                        <option style="display:none" value=""></option>
+                    </select>-->
                 </div>
                 <div class="form-row">
                     <label>Task:</label>
@@ -73,6 +78,9 @@
     <script src="bower_components/angular/angular.js"></script>
     <script src="bower_components/moment/moment.js"></script>
     <script src="bower_components/angular-route/angular-route.min.js"></script>
+    <script src="bower_components/chart.js/dist/Chart.js"></script>
+    <script src="bower_components/angular-chart.js/dist/angular-chart.js"></script>
+    <script src="bower_components/chart.js/dist/Chart.bundle.js"></script>
 
     <script src="app/app.js"></script>
     <script src="app/controllers/timerController.js"></script>
